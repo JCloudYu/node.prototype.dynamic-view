@@ -13,13 +13,13 @@ import {WorkingRoot} from "/kernel-info.esm.js";
 
 
 const script_root = Config.server.root;
-const SCRIPT_EXTENTION = '.mjs';
+const SCRIPT_EXTENTION = ['.mjs', '.esm.js'];
 export async function Handle(req, res) {	
 
 	const target_url  = PurgeRelativePath(decodeURIComponent(req.info.url.path||''));
 	
 	
-	let matched_path = null, matched_path_dir = '', remained_path = '', candidate_base = target_url;
+	let matched_path = null, matched_path_dir = '', remained_path = '', candidate_base = target_url, stat = null;
 	while(candidate_base !== "") {
 		const [left_over, comp] = ShiftURLPath(candidate_base);
 		candidate_base = left_over;
@@ -33,30 +33,35 @@ export async function Handle(req, res) {
 			const candidate = candidates[index];
 			if ( candidate === "/" || "" )  continue;
 		
-			try {
-				
-				const candidate_path = candidate_base + candidate + SCRIPT_EXTENTION;
-				const test_path = WorkingRoot + script_root + candidate_path;
+			for ( let elm=0; elm<candidates.length; elm++ ) {
+				const elm_script_extention = SCRIPT_EXTENTION[elm];
+				try {
+					
+					const candidate_path = candidate_base + candidate + elm_script_extention;
+					const test_path = WorkingRoot + script_root + candidate_path;
+					
 
-				const stat = fs.statSync(test_path);
+					stat = fs.statSync(test_path);
+					if ( !stat.isFile() ) continue;
+					
+					matched_path = script_root + candidate_path;
+					matched_path_dir = script_root + candidate_base;
 
-				if ( !stat.isFile() ) continue;
-				
-				matched_path = script_root + candidate_path;
-				matched_path_dir = script_root + candidate_base;
 
-
-				if ( index > 0 ) {
-					remained_path = candidates[0] + remained_path;
+					if ( index > 0 ) {
+						remained_path = candidates[0] + remained_path;
+					}
+					break;
+					
 				}
-				break;
-				
+				catch(e) {				
+					continue; 
+				}			
 			}
-			catch(e) {				
-				continue; 
-			}
+			if(stat) break;
 		}
 		
+
 		// Obtain module
 		if ( matched_path ) break;
 		
