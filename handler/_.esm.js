@@ -111,7 +111,6 @@ export const Handle = Function.sequentialExecutor.async.spread([
 
 		function Loop_Pop_URL_Path(path) {
 			let list_path = [path]
-			let result = '';
 			while (list_path[1]!=='') {				
 				if(list_path.length === 1) {
 					list_path = PopURLPath(list_path[0]);
