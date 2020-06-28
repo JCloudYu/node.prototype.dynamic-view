@@ -7,6 +7,7 @@
 	"scripts": {
 		"start": "node boot.js"
 	},
+	"expose_global": {},
 	"kernel_script_map": {},
 	"kernel_ext_type_map": {},
 	"keywords": [],

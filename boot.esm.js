@@ -1,6 +1,14 @@
 import "extes";
 import "/kernel/logger.esm.js";
+
+import os_module from "os";
 import {ColorCode} from "/kernel/terminal-ctrl.esm.js";
+
+
+
+// Force making os module global
+/** @global {module:os} **/
+const os = os_module; global.os = os;
 
 
 
@@ -50,6 +58,17 @@ const DEFAULT_BOOT_MAP = {
 	console.error( `${ColorCode.DARK_GRAY}Loading configurations...${ColorCode.RESET}` );
 	await import( "/kernel/runtime.esm.js" ).then(({Init})=>Init());
 	
+	
+	// INFO: Expose modules as global variables
+	const global_map = Object.assign({}, ProjectInfo.expose_global||{});
+	for(const [var_name, module_path] of Object.entries(global_map)) {
+		if ( module_path === "os" && var_name === "os" ) continue;
+	
+		const {default:module} = await import(module_path);
+		if (module !== undefined) {
+			global[var_name] = module;
+		}
+	}
 	
 	
 	// INFO: Detect boot script
