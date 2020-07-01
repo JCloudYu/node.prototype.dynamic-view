@@ -33,8 +33,6 @@ process
 
 
 const DEFAULT_BOOT_MAP = {
-	"": "/index.esm.js",
-	main: "/index.esm.js",
 	version: "/kernel/boot-scripts/version.esm.js",
 	update: "/kernel/boot-scripts/update.esm.js"
 };
@@ -72,10 +70,11 @@ const DEFAULT_BOOT_MAP = {
 	
 	
 	// INFO: Detect boot script
-	const boot_map = Object.assign({}, ProjectInfo.kernel_script_map||{}, DEFAULT_BOOT_MAP);
-	const boot_script = boot_map[boot_cmd];
+	const boot_map = Object.assign({main:"/index.esm.js"}, ProjectInfo.kernel_script_map||{}, DEFAULT_BOOT_MAP);
+	const command = boot_cmd||'main';
+	const boot_script = boot_map[command];
 	if ( !boot_script ) {
-		console.error( `${ColorCode.RED}Invalid command \`${boot_cmd}\`!${ColorCode.RESET}` );
+		console.error( `${ColorCode.RED}Invalid command \`${command}\`!${ColorCode.RESET}` );
 		process.exit(1);
 		return;
 	}
