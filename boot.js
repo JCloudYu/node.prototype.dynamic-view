@@ -17,8 +17,9 @@
 **/
 
 /**
- *	Version: 1.0.0
+ *	Version: 1.1.0
  *	Author: JCloudYu
+ *	Update: 2020/07/26
  *	Create: 2019/07/12
  *
  * 	This script is a bootstrap script that runs the script that contains exactly
@@ -36,10 +37,13 @@
 
 
 
-let _boot_script_name;
-
-// region [ Decide boot script name ]
 const path = require( 'path' );
+const fs = require('fs');
+
+
+
+let _boot_script_name;
+// region [ Decide boot script name ]
 {
 	const BASE_SCRIPT_NAME = path.basename(__filename);
 	_boot_script_name = BASE_SCRIPT_NAME.substring(0, BASE_SCRIPT_NAME.length-3);
@@ -47,37 +51,70 @@ const path = require( 'path' );
 // endregion
 
 
-const ENABLE_NODE_OPTIONS = true;
 const HOST_SCRIPT_EXT	= ".esm.js";
 const BOOT_SCRIPT_NAME	= `${_boot_script_name}${HOST_SCRIPT_EXT}`;
 const KILL_TIMEOUT		= 10 * 1000;
-const NODE_ARGS			= [];
-const SCRIPT_ARGS		= [];
-
-// region [ Divide input arguments into node args and script args ]
-if ( !ENABLE_NODE_OPTIONS ) {
-	SCRIPT_ARGS.push(...process.argv.slice(2));
-}
-else {
-	// NOTE: Arguments with leading triple dashes will be treated as node options
-	// NOTE: The first dash will be removed before sending as node options
-	const INPUT_ARGS = process.argv.slice(2).reverse();
-	while( INPUT_ARGS.length > 0 ) {
-		const arg = INPUT_ARGS.pop();
-		if (arg.substring(0, 3) === "---") {
-			NODE_ARGS.push(arg.substring(1));
+const CONFIG = {
+	NODE_ARGS: [],
+	SCRIPT_ARGS: [],
+	PIPE_OUT: null,
+	PIPE_ERR: null
+};
+const INPUT_ARGS = process.argv.slice(2).reverse();
+while( INPUT_ARGS.length > 0 ) {
+	const arg = INPUT_ARGS.pop();
+	switch(arg) {
+		case "--node": {
+			CONFIG.NODE_ARGS.push(INPUT_ARGS.pop());
+			break;
 		}
-		else {
-			SCRIPT_ARGS.push(arg);
+		
+		case "--pipe": {
+			const file_path = INPUT_ARGS.pop();
+			CONFIG.PIPE_ERR = CONFIG.PIPE_OUT = path.resolve(process.cwd(), file_path);
+			break;
+		}
+		
+		case "--pipe-out": {
+			const file_path = INPUT_ARGS.pop();
+			CONFIG.PIPE_OUT = path.resolve(process.cwd(), file_path);
+			break;
+		}
+		
+		case "--pipe-err":{
+			const file_path = INPUT_ARGS.pop();
+			CONFIG.PIPE_ERR = path.resolve(process.cwd(), file_path);
+			break;
+		}
+		
+		default:
+			CONFIG.SCRIPT_ARGS.push(arg);
+			break;
+	}
+}
+
+
+
+
+// region [ Create child process and bind termination handler ]
+if ( CONFIG.PIPE_ERR || CONFIG.PIPE_OUT ) {
+	if ( CONFIG.PIPE_OUT === CONFIG.PIPE_ERR ) {
+		CONFIG.PIPE_OUT = CONFIG.PIPE_ERR = fs.createWriteStream(CONFIG.PIPE_OUT);
+	}
+	else {
+		if ( CONFIG.PIPE_OUT ) {
+			CONFIG.PIPE_OUT = fs.createWriteStream(CONFIG.PIPE_OUT);
+		}
+		
+		if ( CONFIG.PIPE_ERR ) {
+			CONFIG.PIPE_ERR = fs.createWriteStream(CONFIG.PIPE_ERR);
 		}
 	}
 }
-// endregion
 
-// region [ Create child process and bind termination handler ]
 const CHILD_PROC = require('child_process').spawn(
 	process.execPath, [
-		...NODE_ARGS,
+		...CONFIG.NODE_ARGS,
 	
 		// NOTE: Tell the child NodeJS env to run in es module mode
 		'--experimental-modules',
@@ -95,12 +132,12 @@ const CHILD_PROC = require('child_process').spawn(
 		
 		// NOTE: Assign the boot script and spread the remaining arguments
 		`${__dirname}/${BOOT_SCRIPT_NAME}`,
-		...SCRIPT_ARGS
+		...CONFIG.SCRIPT_ARGS
 	],
 	{
 		cwd: process.cwd(),
 		env: process.env,
-		stdio: [0, 1, 2]
+		stdio: ['inherit', 'pipe', 'pipe']
 	}
 );
 CHILD_PROC._kill_timeout = null;
@@ -111,6 +148,20 @@ CHILD_PROC.on( 'exit', (code)=>{
 	}
 	
 	process.exit((code === null) ? 1 : code);
+});
+CHILD_PROC.stdout.on('data', (chunk)=>{
+	if ( CONFIG.PIPE_OUT ) {
+		CONFIG.PIPE_OUT.write(chunk);
+	}
+	
+	process.stdout.write(chunk);
+});
+CHILD_PROC.stderr.on('data', (chunk)=>{
+	if ( CONFIG.PIPE_ERR ) {
+		CONFIG.PIPE_ERR.write(chunk);
+	}
+	
+	process.stderr.write(chunk);
 });
 // endregion
 
