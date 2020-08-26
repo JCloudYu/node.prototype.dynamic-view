@@ -4,7 +4,7 @@
 **/
 import fs from "fs";
 import path from "path";
-import {Beson} from "beson/beson.esm.js";
+import Beson from "beson";
 
 import {WorkingRoot} from "/kernel-info.esm.js";
 import {Config} from "/kernel/config.esm.js";

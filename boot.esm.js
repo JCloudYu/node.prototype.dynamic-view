@@ -1,8 +1,8 @@
 import "extes";
-import "/kernel/logger.esm.js";
-
 import os_module from "os";
-import {ColorCode} from "/kernel/terminal-ctrl.esm.js";
+
+import "/kernel/logger.esm.js";
+import ColorCode from "/kernel/term-code.js";
 
 
 
