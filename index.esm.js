@@ -65,19 +65,19 @@ import {
 			const now = Date.now();
 			const original_path = req_headers['x-forwarded-path']||base_path;
 			const prefixed_path = original_path.substring(0, original_path.length - base_path.length)
-			
 			Object.defineProperty(req, 'info', {
-				configurable:false, writable:false, enumerable:true,
-				value: Object.assignConstants({}, {
-					host: req_headers['x-forwarded-host']||req_headers['host']||null,
-					protocol: req_headers['x-forwarded-proto']||'http',
-					remote_ip: req_headers['x-real-ip']||req.socket.remoteAddress,
+				value: Object.defineProperties({cookies:{}}, {
+					host: {value:req_headers['x-forwarded-host']||req_headers['host']||null, enumerable:true},
+					protocol: {value:req_headers['x-forwarded-proto']||'http', enumerable:true},
+					remote_ip: {value:req_headers['x-real-ip']||req.socket.remoteAddress, enumerable:true},
 					
 					// Note that the req.url is able to be manipulated
-					url: { raw:base_path, routed_path:prefixed_path, path, query, fragment },
-					time: Math.floor(now/1000),
-					time_milli:now
-				}, true)
+					url: {value:{
+						raw:base_path, routed_path:prefixed_path, path, query, fragment
+					}, enumerable:true},
+					time: {value:Math.floor(now/1000), enumerable:true},
+					time_milli: {value:now, enumerable:true}
+				}), enumerable:true
 			});
 		}
 		

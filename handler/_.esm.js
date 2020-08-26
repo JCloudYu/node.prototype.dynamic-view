@@ -82,7 +82,8 @@ export const Handle = Function.sequential.async([
 	function(req, res) {
 		req.session = {};
 		req.meta = {};
-		req.info.cookies = ParseHTTPCookies(req.headers['cookies']||'');
+		
+		Object.defineProperty(req.info, 'cookies', {value:ParseHTTPCookies(req.headers['cookies']||''), enumerable:true});
 	},
 	function(req, res) {
 		const {url} = req.info;
