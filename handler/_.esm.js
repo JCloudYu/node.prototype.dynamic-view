@@ -2,9 +2,6 @@
  *	Author: JCloudYu
  *	Create: 2019/07/16
 **/
-import {PopURLPath} from "jsboost/web/uri-parser.esm.js";
-import {HTTPCookies} from "jsboost/http-cookies.esm.js";
-
 import {HTTPRequestRejectError, SystemError} from "/kernel/error.esm.js";
 import {BaseError} from "/lib/error/base-error.esm.js";
 
@@ -81,15 +78,15 @@ export function HandleSystemError(req, res, error) {
 	res.writeHead(error.httpStatus, headers);
 	res.end(JSON.stringify(error));
 }
-export const Handle = Function.sequentialExecutor.async.spread([
+export const Handle = Function.sequential.async([
 	function(req, res) {
 		req.session = {};
 		req.meta = {};
-		req.info.cookies = HTTPCookies.FromRawCookies(req.headers['cookies']||'');
+		req.info.cookies = ParseHTTPCookies(req.headers['cookies']||'');
 	},
 	function(req, res) {
 		const {url} = req.info;
-		const [api, remained] = PopURLPath(url.path);
+		const [api, remained] = url.path.pull('/');
 		url.path = remained;
 		
 		// INFO: Detect if the api handler is registered
@@ -101,3 +98,25 @@ export const Handle = Function.sequentialExecutor.async.spread([
 		return api_module.Handle(req, res);
 	}
 ]);
+
+
+function ParseHTTPCookies(rawCookies) {
+	rawCookies = rawCookies.trim();
+	
+	const incoming_cookies = {};
+	const cookies = rawCookies.split(';');
+	for( const raw_cookie of cookies ) {
+		let cookie = raw_cookie.trim();
+		if ( !cookie ) continue;
+		
+		const _splitter = cookie.indexOf( '=' );
+		if ( _splitter < 0 ) continue;
+		
+		
+		
+		const name = cookie.substring(0, _splitter);
+		incoming_cookies[name] = cookie.substring(_splitter+1);
+	}
+	
+	return incoming_cookies;
+}

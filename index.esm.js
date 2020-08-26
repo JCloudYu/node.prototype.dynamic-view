@@ -3,7 +3,6 @@
  *	Create: 2019/05/27
 **/
 import http from "http";
-import {ParseURLPathDescriptor} from "jsboost/web/uri-parser.esm.js"
 
 import {CheckDataSystemVersion} from "/kernel-info.esm.js";
 import {Config} from "/kernel/config.esm.js";
@@ -148,3 +147,30 @@ import {
 		setTimeout(()=>process.exit(1));
 	});
 })().catch((e)=>setTimeout(()=>{throw e}));
+
+
+function ParseURLPathDescriptor(url) {
+	url = (url||'').trim();
+
+	// NOTE: Parse hash
+	let query, frag, pos = url.indexOf( '#' );
+	if ( pos < 0 ) {
+		frag = '';
+	}
+	else {
+		frag = url.substring(pos);
+		url = url.substring(0, pos);
+	}
+	
+	// NOTE: Parse query
+	pos = url.indexOf( "?" );
+	if ( pos < 0 ) {
+		query = '';
+	}
+	else {
+		query = url.substring(pos);
+		url = url.substring(0, pos);
+	}
+	
+	return {path:url, query, fragment:frag};
+}
