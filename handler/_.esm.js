@@ -2,8 +2,6 @@
  *	Author: JCloudYu
  *	Create: 2019/07/16
 **/
-import {HTTPCookies} from "jsboost/http-cookies.esm.js";
-
 import {HTTPRequestRejectError, SystemError} from "/kernel/error.esm.js";
 import {BaseError} from "/lib/error/base-error.esm.js";
 
@@ -92,11 +90,34 @@ export function HandleSystemError(req, res, error) {
 	</body>
 </html>`);
 }
-export const Handle = Function.sequentialExecutor.async.spread([
+export const Handle = Function.sequential.async([
 	function(req, res) {
 		req.session = {};
 		req.meta = {};
-		req.info.cookies = HTTPCookies.FromRawCookies(req.headers['cookies']||'');
+		
+		Object.defineProperty(req.info, 'cookies', {value:ParseHTTPCookies(req.headers['cookies']||''), enumerable:true});
 	},
 	HandleDynamicViewRequest
 ]);
+
+
+function ParseHTTPCookies(rawCookies) {
+	rawCookies = rawCookies.trim();
+	
+	const incoming_cookies = {};
+	const cookies = rawCookies.split(';');
+	for( const raw_cookie of cookies ) {
+		let cookie = raw_cookie.trim();
+		if ( !cookie ) continue;
+		
+		const _splitter = cookie.indexOf( '=' );
+		if ( _splitter < 0 ) continue;
+		
+		
+		
+		const name = cookie.substring(0, _splitter);
+		incoming_cookies[name] = cookie.substring(_splitter+1);
+	}
+	
+	return incoming_cookies;
+}

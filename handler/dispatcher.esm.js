@@ -6,9 +6,6 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
-import {ShiftURLPath} from "jsboost/web/uri-parser.esm.js";
-import {PurgeRelativePath} from "jsboost/web/uri-parser.esm.js";
-
 import {WorkingRoot} from "/kernel-info.esm.js";
 import {Config} from "/kernel/config.esm.js";
 import {HTTPRequestRejectError} from "/kernel/error.esm.js";
@@ -70,7 +67,7 @@ async function HandleDynamicView(req, res) {
 	
 	let matched_path = null, matched_path_dir = '', remained_path = '', candidate_base = target_url;
 	while(candidate_base !== "") {
-		const [left_over, comp] = ShiftURLPath(candidate_base);
+		const [left_over, comp] = candidate_base.pull('/', false);
 		candidate_base = left_over;
 		
 		const candidates = [comp, '/index'];
@@ -164,4 +161,21 @@ function MatchExtension(item, list) {
 	}
 	
 	return -1;
+}
+function PurgeRelativePath(path_part) {
+	if ( path_part[0] !== "/" ) path_part = '/' + path_part;
+	
+	
+	const path_comp = path_part.substring(1).split('/');
+	const new_path = [];
+	for( const comp of path_comp ) {
+		if ( comp === "." ) continue;
+		if ( comp === ".." ) {
+			new_path.splice(new_path.length-1, 1);
+			continue;
+		}
+		new_path.push(comp);
+	}
+	
+	return `/${new_path.join('/')}`;
 }

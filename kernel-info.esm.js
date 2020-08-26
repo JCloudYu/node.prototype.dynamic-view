@@ -1,18 +1,18 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import {Beson} from "beson/beson.esm.js";
+import Beson from "beson";
 import {Version} from "/kernel/version.esm.js";
 
 
 // Arch kernel - https://github.com/JCloudYu/node.prototype.kernel/
-const KernelArchVersion = [{identifier: "node.prototype.kernel", version: "1.1.6"}];
+const KernelArchVersion = [{identifier: "node.prototype.kernel", version: "1.2.0"}];
 
 // Arch api - https://github.com/JCloudYu/node.prototype.api/
-KernelArchVersion.push({identifier: "node.prototype.api", version: "1.0.1"});
+KernelArchVersion.push({identifier: "node.prototype.api", version: "1.1.0"});
 
 // Arch dynamic-www - https://github.com/JCloudYu/node.prototype.api/
-KernelArchVersion.push({identifier: "node.prototype.dynamic-view", version: "1.0.1"});
+KernelArchVersion.push({identifier: "node.prototype.dynamic-view", version: "1.1.0"});
 
 // other application arch type can add additional versions like following line
 // KernelArchVersion.push({identifier: "other_arch_versions", version: "0.9.0"});
