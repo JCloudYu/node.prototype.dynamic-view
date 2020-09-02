@@ -1,40 +1,27 @@
 import "extes";
-import os_module from "os";
-
-import "/kernel/logger.esm.js";
 import ColorCode from "/kernel/term-code.js";
 
-
-
-// Force making os module global
-/** @global {module:os} **/
-const os = os_module; global.os = os;
+const N=()=>{};
 
 
 
 process
-.on( 'unhandledRejection', (rej)=>{
-	logger.error( `${ColorCode.LIGHT_RED}Receiving unhandled rejection! Exiting...${ColorCode.RESET}` );
-	console.error(rej);
+.on('unhandledRejection',(rej)=>{
+	console.error( `${ColorCode.LIGHT_RED}Receiving unhandled rejection! Exiting...${ColorCode.RESET}\n`, rej);
 	process.exit(1);
 })
-.on( 'uncaughtException', (e)=>{
-	logger.error(`${ColorCode.LIGHT_RED}Receiving uncaught exception! Exiting...${ColorCode.RESET}`);
-	console.error(e);
+.on('uncaughtException',(e)=>{
+	console.error(`${ColorCode.LIGHT_RED}Receiving uncaught exception! Exiting...${ColorCode.RESET}\n`, e);
 	process.exit(1);
 })
-.on( 'SIGINT', (...args)=>{
-	process.emit( 'SIGNAL_INTERRUPTION', ...args );
-})
-.on( 'SIGTERM', (...args)=>{
-	process.emit( 'SIGNAL_TERMINATION', ...args );
-});
+.on('SIGINT',N).on('SIGTERM',N);
 
 
 
 const DEFAULT_BOOT_MAP = {
 	version: "/kernel/boot-scripts/version.esm.js",
-	update: "/kernel/boot-scripts/update.esm.js"
+	update: "/kernel/boot-scripts/update.esm.js",
+	run: "/kernel/boot-scripts/run-script.esm.js"
 };
 
 (async()=>{
@@ -42,7 +29,9 @@ const DEFAULT_BOOT_MAP = {
 	await setTimeout.idle(100);
 	
 	// INFO: Decide boot script
-	const [,, boot_cmd=''] = process.argv;
+	const [boot_cmd='', ..._argv] = process.argv.slice(2);
+	process._argv = _argv;
+	
 	
 	// INFO: Collect information about current runtime environment
 	console.error( `${ColorCode.DARK_GRAY}Obtaining kernel info...${ColorCode.RESET}` );
