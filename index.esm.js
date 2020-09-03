@@ -123,8 +123,7 @@ import {
 	
 	
 	process
-	.on( 'SIGNAL_INTERRUPTION', ()=>{})
-	.on( 'SIGNAL_TERMINATION', async()=>{
+	.on( 'SIGTERM', async()=>{
 		logger.info( `Cleaning up request handlers...` );
 		await CleanUpRequestHandler();
 		

@@ -1,4 +1,4 @@
-export async function Update(prev_version, logger) {
+export async function Update(prev_version) {
 	// This script is purposed to do nothing...
-	logger.log("Basic system initialization...");
+	console.log("Basic system initialization...");
 }

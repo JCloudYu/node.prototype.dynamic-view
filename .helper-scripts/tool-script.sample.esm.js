@@ -18,10 +18,10 @@ import {WorkingRoot, CheckDataSystemVersion, RuntimeDir} from "/kernel.esm.js";
 	
 	
 	// INFO: Do script content here...
-	logger.info( `Tool ${import.meta.url} initialized...` );
-	logger.info( `Runtime Dir: ${RuntimeDir}` );
-	logger.info( `Working Root: ${WorkingRoot}` );
-	logger.info( `Starting regular timer...` );
+	console.log( `Tool ${import.meta.url} initialized...` );
+	console.log( `Runtime Dir: ${RuntimeDir}` );
+	console.log( `Working Root: ${WorkingRoot}` );
+	console.log( `Starting regular timer...` );
 	
 	let prev = 0;
 	const timer = setInterval.create();
@@ -31,20 +31,19 @@ import {WorkingRoot, CheckDataSystemVersion, RuntimeDir} from "/kernel.esm.js";
 		prev = now.getTime();
 		
 		
-		logger.info( "NOW: " + now.toLocaleISOString() );
+		console.log( "NOW: " + now.toLocaleISOString() );
 	}, 500);
 	
 	
 	
 	
 	process
-	.on( 'SIGNAL_INTERRUPTION', ()=>{})
-	.on( 'SIGNAL_TERMINATION', async()=>{
+	.on( 'SIGTERM', async()=>{
 		// INFO: Cleanup runtime here...
-		logger.info( `Cleaning up regular timer...` );
+		console.log( `Cleaning up regular timer...` );
 		timer.clear();
 		
-		logger.info( `Exiting...` );
+		console.log( `Exiting...` );
 		setTimeout(()=>process.exit(1));
 	});
 	

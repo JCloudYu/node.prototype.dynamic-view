@@ -17,7 +17,7 @@
 **/
 
 /**
- *	Version: 2.0.0
+ *	Version: 3.0.0
  *	Author: JCloudYu
  *	Update: 2020/07/26
  *	Create: 2019/07/12
@@ -53,7 +53,7 @@ const [, ...VERSION_INFO] = process.version.match(/^v?(\d+)\.(\d+)\.(\d+)$/);
 VERSION_INFO[0] = VERSION_INFO[0]|0;
 VERSION_INFO[1] = VERSION_INFO[1]|0;
 VERSION_INFO[2] = VERSION_INFO[2]|0;
-const V12_17 = (VERSION_INFO[0]>12 || VERSION_INFO[0]===12&&VERSION_INFO[1]>=17);
+const GREATER_THAN_12_17 = (VERSION_INFO[0]>12 || VERSION_INFO[0]===12&&VERSION_INFO[1]>=17);
 
 
 
@@ -73,6 +73,7 @@ const CONFIG = {
 	NODE_ARGS: [],
 	SCRIPT_ARGS: [],
 	BOOTSTRAP_FILENAME: '',
+	KEEP_ALIVE: false
 };
 
 {
@@ -158,6 +159,11 @@ while( INPUT_ARGS.length > 0 ) {
 			const BASE_SCRIPT_NAME = path.basename(CONFIG.BOOT_SCRIPT_PATH=path.resolve(process.cwd(), assign));
 			const idx = BASE_SCRIPT_NAME.lastIndexOf('.');
 			CONFIG.BOOTSTRAP_FILENAME = (idx > 0) ? BASE_SCRIPT_NAME.substring(0, idx) : BASE_SCRIPT_NAME;
+			break;
+		}
+		
+		case "--keep-alive": {
+			CONFIG.KEEP_ALIVE = true;
 			break;
 		}
 		
@@ -299,7 +305,7 @@ if ( CONFIG.PIPE_ERR || CONFIG.PIPE_OUT ) {
 }
 
 const SPAWN_ARGS = [ ...CONFIG.NODE_ARGS ];
-if ( !V12_17 ) {
+if ( !GREATER_THAN_12_17 ) {
 	SPAWN_ARGS.push('--experimental-modules');
 }
 else {
@@ -307,7 +313,7 @@ else {
 }
 
 if ( CONFIG.LOADER_SCRIPT_PATH ) {
-	if ( VERSION_INFO[0] < 12 || VERSION_INFO[1] < 17 ) {
+	if ( !GREATER_THAN_12_17 ) {
 		SPAWN_ARGS.push('--loader');
 	}
 	else {
@@ -322,42 +328,24 @@ SPAWN_ARGS.push(CONFIG.BOOT_SCRIPT_PATH);
 SPAWN_ARGS.push(...CONFIG.SCRIPT_ARGS);
 // endregion
 
+
+
+
+
 // region [ Create child process and bind termination handler ]
-const CHILD_PROC = require('child_process').spawn(
-	process.execPath, SPAWN_ARGS,
-	{
-		cwd: process.cwd(),
-		env: process.env,
-		stdio: ['inherit', 'pipe', 'pipe']
-	}
-);
-CHILD_PROC._kill_timeout = null;
-CHILD_PROC.on( 'exit', (code)=>{
-	if ( CHILD_PROC._kill_timeout ) {
-		clearTimeout(CHILD_PROC._kill_timeout);
-		CHILD_PROC._kill_timeout = null;
-	}
-	
-	process.exit((code === null) ? 1 : code);
-});
-CHILD_PROC.stdout.on('data', (chunk)=>{
-	if ( CONFIG.PIPE_OUT ) {
-		LogStream.stdout(chunk);
-	}
-	
-	process.stdout.write(chunk);
-});
-CHILD_PROC.stderr.on('data', (chunk)=>{
-	if ( CONFIG.PIPE_ERR ) {
-		LogStream.stderr(chunk);
-	}
-	
-	process.stderr.write(chunk);
-});
+let CHILD_PROC = SPAWN_CHILD();
 // endregion
 
 // region [ Bind incoming signal events ]
 process
+.on( 'PROCESS_EXITED', (child)=>{
+	if ( CONFIG.KEEP_ALIVE === false || process.exiting || child.code === 0 ) {
+		process.exit(0);
+		return;
+	}
+	
+	CHILD_PROC = SPAWN_CHILD();
+})
 .on( 'SIGTERM', __TRIGGER_TERMINATE_SIGNAL )
 .on( 'SIGINT', __TRIGGER_TERMINATE_SIGNAL )
 .on( 'SIGHUP', __TRIGGER_TERMINATE_SIGNAL )
@@ -370,6 +358,37 @@ process
 
 
 // region [ Helper functions ]
+function SPAWN_CHILD() {
+	const sub_process = require('child_process').spawn(
+		process.execPath, SPAWN_ARGS,
+		{
+			cwd: process.cwd(),
+			env: process.env,
+			stdio: ['inherit', 'pipe', 'pipe']
+		}
+	);
+	sub_process._kill_timeout = null;
+	sub_process.on( 'exit', (code, signal)=>{
+		sub_process.exited_state = {code, signal};
+		process.emit('PROCESS_EXITED', sub_process);
+	});
+	sub_process.stdout.on('data', (chunk)=>{
+		if ( CONFIG.PIPE_OUT ) {
+			LogStream.stdout(chunk);
+		}
+		
+		process.stdout.write(chunk);
+	});
+	sub_process.stderr.on('data', (chunk)=>{
+		if ( CONFIG.PIPE_ERR ) {
+			LogStream.stderr(chunk);
+		}
+		
+		process.stderr.write(chunk);
+	});
+	return sub_process;
+}
+
 function __CMD_SPLIT(option) {
 	option = ('' + (option||'')).trim();
 
@@ -390,7 +409,9 @@ function __TRIGGER_TERMINATE_SIGNAL(...args) {
 	process.emit( 'TERMINATE_SIGNAL', ...args );
 }
 function __RECEIVE_TERMINATE_SIGNAL() {
+	process.exiting = true;
 	CHILD_PROC._kill_timeout = setTimeout(()=>{
+		if ( CHILD_PROC.exited_state ) return;
 		CHILD_PROC.kill( 'SIGKILL' );
 	}, CONFIG.KILL_TIMEOUT * 1000);
 
