@@ -45,6 +45,9 @@ const DEFAULT_BOOT_MAP = {
 	console.error( `${ColorCode.DARK_GRAY}Loading configurations...${ColorCode.RESET}` );
 	await import( "/kernel/runtime.esm.js" ).then(({Init})=>Init());
 	
+	// INFO: Initialize remaining contents
+	console.error( `${ColorCode.DARK_GRAY}Loading configurations...${ColorCode.RESET}` );
+	await import( "/boot-init.esm.js" ).then(({Init})=>Init?Init():null).catch(()=>{});
 	
 	// INFO: Expose modules as global variables
 	const global_map = Object.assign({}, ProjectInfo.expose_global||{});
@@ -56,7 +59,6 @@ const DEFAULT_BOOT_MAP = {
 			global[var_name] = module;
 		}
 	}
-	
 	
 	// INFO: Detect boot script
 	const boot_map = Object.assign({main:"/index.esm.js"}, ProjectInfo.kernel_script_map||{}, DEFAULT_BOOT_MAP);
