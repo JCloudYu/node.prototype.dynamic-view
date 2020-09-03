@@ -10,14 +10,10 @@ import {WorkingRoot, KernelInfo} from "/kernel.esm.js";
 	console.log( "Trying to initialize update runtime environment..." );
 	try {
 		UpdateRuntime = await import("/update/update.runtime.esm.js");
-	}
-	catch(e) {}
+	} catch(e) {}
 	
-	if ( UpdateRuntime ) {
-		if ( UpdateRuntime.Init ) {
-			await UpdateRuntime.Init();
-		}
-		
+	if ( UpdateRuntime && UpdateRuntime.Init ) {
+		await UpdateRuntime.Init();
 		console.log( "Application runtime environment initialized!" );
 	}
 	
@@ -33,6 +29,8 @@ import {WorkingRoot, KernelInfo} from "/kernel.esm.js";
 	
  	// NOTE: Fetch update files
  	const content_list = fs.readdirSync(`${WorkingRoot}/update/updates`);
+ 	
+ 	/** @type {Version[]} **/
  	const versions = [];
  	for( const item of content_list ) {
  		if ( item === "." || item === ".." || item.substr(-7) !== ".esm.js" ) continue;
@@ -63,6 +61,7 @@ import {WorkingRoot, KernelInfo} from "/kernel.esm.js";
  	else {
  		console.log( `Update finished! (${start_version} -> ${system_version})` );
  	}
+ 	
  	
  	
  	if ( UpdateRuntime && UpdateRuntime.CleanUp ) {

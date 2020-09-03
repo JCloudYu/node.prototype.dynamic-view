@@ -2,7 +2,7 @@
  *	Author: JCloudYu
  *	Create: 2020/06/03
 **/
-const MAX_NUMBER		= 999999999;
+const MAX_NUMBER		= 1000000000;
 const full_version		= /^([0-9]|[1-9][0-9]+)\.([0-9]|[1-9][0-9]+)\.([0-9]|[1-9][0-9]+)$/;
 const partial_version	= /^([0-9]|[1-9][0-9]+)(\.([0-9]|[1-9][0-9]+))?$/;
 
@@ -36,7 +36,7 @@ export class Version {
 					minor = minor|0;
 					patch = patch|0;
 					
-					if ( major > MAX_NUMBER || minor > MAX_NUMBER || patch > MAX_NUMBER ) {
+					if ( major >= MAX_NUMBER || minor >= MAX_NUMBER || patch >= MAX_NUMBER ) {
 						throw new RangeError(`Each of the version components must not be greater than ${MAX_NUMBER}!`);
 					}
 				
@@ -52,7 +52,7 @@ export class Version {
 	compare(ver, _larger=true) {
 		ver = Version.parse(ver);
 		
-		const missing_value = _larger ? 9999999 : -1;
+		const missing_value = _larger ? MAX_NUMBER : -1;
 		const tests = ['major', 'minor', 'patch'];
 		for(const digit of tests) {
 			let a = this[digit], b = ver[digit];

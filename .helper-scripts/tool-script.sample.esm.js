@@ -46,6 +46,4 @@ import {WorkingRoot, CheckDataSystemVersion, RuntimeDir} from "/kernel.esm.js";
 		console.log( `Exiting...` );
 		setTimeout(()=>process.exit(1));
 	});
-	
-	
 })().catch((e)=>{setTimeout(()=>{throw e;})});
