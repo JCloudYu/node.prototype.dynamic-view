@@ -4,7 +4,7 @@
 **/
 import fs from "fs";
 import path from "path";
-import Beson from "beson";
+import beson from "beson";
 
 import {WorkingRoot} from "/kernel-info.esm.js";
 import {Config} from "/kernel/config.esm.js";
@@ -74,14 +74,14 @@ export async function Init() {
 
 
 function __StoreRuntimeData() {
-	const content = Beson.Serialize(_runtime_data);
+	const content = beson.Serialize(_runtime_data);
 	fs.writeFileSync(RuntimePath, Buffer.from(content));
 	return this;
 }
 function __ReloadRuntimeData() {
 	try {
 		const content = fs.readFileSync(RuntimePath);
-		const decoded = Beson.Deserialize(ArrayBuffer.from(content));
+		const decoded = beson.Deserialize(ArrayBuffer.from(content));
 		if ( Object(decoded) === decoded ) {
 			_runtime_data = decoded;
 		}
