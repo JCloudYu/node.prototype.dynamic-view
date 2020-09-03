@@ -6,10 +6,10 @@ import {Version} from "/kernel/version.esm.js";
 
 
 // Arch kernel - https://github.com/JCloudYu/node.prototype.kernel/
-const KernelArchVersion = [{identifier: "node.prototype.kernel", version: "1.2.0"}];
+const KernelArchVersion = [{identifier: "node.prototype.kernel", version: "1.3.0"}];
 
 // Arch api - https://github.com/JCloudYu/node.prototype.api/
-KernelArchVersion.push({identifier: "node.prototype.api", version: "1.1.0"});
+KernelArchVersion.push({identifier: "node.prototype.api", version: "1.2.0"});
 
 // Arch dynamic-www - https://github.com/JCloudYu/node.prototype.api/
 KernelArchVersion.push({identifier: "node.prototype.dynamic-view", version: "1.1.0"});
@@ -87,7 +87,7 @@ const ProjectInfo = JSON.parse(fs.readFileSync(`${WorkingRoot}/package.json`));
 export function Init() {
 	_load_kernel_data();
 }
-export function CheckDataSystemVersion(auto_exit=true, verbose=true) {
+function CheckDataSystemVersion(auto_exit=true, verbose=true) {
 	const {version:data_version} = DATA.kernel_data;
 	if ( !data_version ) {
 		if ( verbose ) {
@@ -112,9 +112,17 @@ export function CheckDataSystemVersion(auto_exit=true, verbose=true) {
 	
 	return true;
 }
-export function ResolveFileURIPath(url) {
+function ResolveFileURIPath(url) {
 	if ( url.substring(0, 7) !== "file://" ) return url;
 
 	return url.substring(IsWindowsEnv ? 8 : 7);
 }
-export {IsWindowsEnv, WorkingRoot, KernelInfo, ProjectInfo, KernelArchVersion};
+export {
+	ResolveFileURIPath as _ResolveFileURIPath,
+	CheckDataSystemVersion as _CheckDataSystemVersion,
+	IsWindowsEnv as _IsWindowsEnv,
+	WorkingRoot as _WorkingRoot,
+	KernelInfo as _KernelInfo,
+	ProjectInfo as _ProjectInfo,
+	KernelArchVersion as _KernelArchVersion
+};

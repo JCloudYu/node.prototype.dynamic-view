@@ -3,9 +3,7 @@
  *	Create: 2019/05/27
 **/
 import http from "http";
-
-import {CheckDataSystemVersion} from "/kernel-info.esm.js";
-import {Config} from "/kernel/config.esm.js";
+import {CheckDataSystemVersion, Config} from "/kernel.esm.js";
 
 import {
 	Init as InitRequestHandler,
