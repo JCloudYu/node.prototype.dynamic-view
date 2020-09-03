@@ -35,7 +35,7 @@ const DEFAULT_BOOT_MAP = {
 	
 	// INFO: Collect information about current runtime environment
 	console.error( `${ColorCode.DARK_GRAY}Obtaining kernel info...${ColorCode.RESET}` );
-	const ProjectInfo = await import('/kernel-info.esm.js').then(async({Init, ProjectInfo})=>{await Init(); return ProjectInfo;});
+	const ProjectInfo = await import('/kernel-info.esm.js').then(async({Init, _ProjectInfo})=>{await Init(); return _ProjectInfo;});
 	
 	// INFO: Load environmental configurations
 	console.error( `${ColorCode.DARK_GRAY}Loading configurations...${ColorCode.RESET}` );

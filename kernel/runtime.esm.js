@@ -6,17 +6,17 @@ import fs from "fs";
 import path from "path";
 import beson from "beson";
 
-import {WorkingRoot} from "/kernel-info.esm.js";
-import {Config} from "/kernel/config.esm.js";
+import {_WorkingRoot as WorkingRoot} from "/kernel-info.esm.js";
+import {_Config as Config} from "/kernel/config.esm.js";
 import {Watchable} from "/kernel/watchable.esm.js";
 
-export const RuntimeDir = path.resolve(WorkingRoot, Config.runtime_dir);
+export const _RuntimeDir = path.resolve(WorkingRoot, Config.runtime_dir);
 
 
 
 let _runtime_data = {};
-const RuntimePath = `${RuntimeDir}/runtime.bes`;
-export const RuntimeData = new Proxy({}, {
+const RuntimePath = `${_RuntimeDir}/runtime.bes`;
+export const _RuntimeData = new Proxy({}, {
 	has:(_, prop)=>{
 		return (prop in _runtime_data);
 	},
@@ -34,11 +34,11 @@ export const RuntimeData = new Proxy({}, {
 		return true;
 	}
 });
-export const VolatileData = Watchable();
+export const _VolatileData = Watchable();
 export async function Init() {
 	const stat = (()=>{
 		try {
-			return fs.statSync(RuntimeDir);
+			return fs.statSync(_RuntimeDir);
 		}
 		catch(e) {
 			if ( e.code === 'ENOENT' ) {
@@ -49,18 +49,18 @@ export async function Init() {
 		}
 	})();
 	if ( !stat ) {
-		fs.mkdirSync(RuntimeDir, {recursive:true, mode:0o755});
+		fs.mkdirSync(_RuntimeDir, {recursive:true, mode:0o755});
 	}
 	else
 	if ( !stat.isDirectory() ) {
-		throw new Error(`Runtime dir \`${RuntimeDir}\` must be a directory!`);
+		throw new Error(`Runtime dir \`${_RuntimeDir}\` must be a directory!`);
 	}
 	else {
 		try {
-			fs.accessSync(RuntimeDir, fs.constants.W_OK|fs.constants.R_OK|fs.constants.X_OK);
+			fs.accessSync(_RuntimeDir, fs.constants.W_OK|fs.constants.R_OK|fs.constants.X_OK);
 		}
 		catch(e) {
-			throw new Error(`Current user has no access to the runtime dir \`${RuntimeDir}\`!`);
+			throw new Error(`Current user has no access to the runtime dir \`${_RuntimeDir}\`!`);
 		}
 	}
 	
