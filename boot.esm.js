@@ -16,25 +16,42 @@ const ERR=(e)=>{
 
 
 process
-.once('cleanup', async()=>{
-	for(const cleanup_callback of CLEANUP_QUEUE) {
-		await Promise.resolve(cleanup_callback()).catch((e)=>console.error(e));
-	}
-})
 .on('unhandledRejection',ERR).on('uncaughtException',ERR)
 .on('SIGINT',N).on('SIGTERM',N);
 
+{
+	let has_clean_up = false;
+	/** @typedef {Function} NodeJS.Process.register_cleanup **/
+	process.register_cleanup = function(cb) {
+		const type = typeof cb;
+		if (type !== "function") {
+			throw TypeError(`Given cleanup callback expects a function but receives ${type}.`);
+		}
+		
+		CLEANUP_QUEUE.push(cb);
+		return this;
+	};
+	
+	/** @typedef {Function} NodeJS.Process.cleanup **/
+	process.cleanup = async function cleanup() {
+		if ( has_clean_up ) return; has_clean_up = true;
+		for(const cleanup_callback of CLEANUP_QUEUE) {
+			await Promise.resolve(cleanup_callback()).catch((e)=>console.error(e));
+		}
+	}
+}
 
 
-/**
- * @typedef {String[]} NodeJS.Process.exec_args
-**/
+
+
 
 (async()=>{
 	// INFO: Idle everything to hoist warning verbose
 	await setTimeout.idle(100);
 	
 	const [boot_cmd='', ..._argv] = process.argv.slice(2);
+	
+	/** @typedef {String[]} NodeJS.Process.exec_args **/
 	process.exec_args = _argv;
 	
 	
@@ -76,9 +93,5 @@ process
 	}
 	
 	await import(boot_script);
-	
-	
-	// Make sure the cleanup call is registered as later as possible
-	process.on('SIGTERM', ()=>process.emit('cleanup'));
 })().catch(ERR);
 

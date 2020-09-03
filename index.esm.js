@@ -14,6 +14,8 @@ import {CheckDataSystemVersion} from "/kernel.esm.js";
 	
 	process
 	.on( 'SIGTERM', async()=>{
+		await process.cleanup();
+		
 		console.log( `Exiting...` );
 		setTimeout(()=>process.exit(1));
 	});
