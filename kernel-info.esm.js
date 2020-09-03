@@ -9,7 +9,7 @@ import {Version} from "/kernel/version.esm.js";
 const KernelArchVersion = [{identifier: "node.prototype.kernel", version: "1.3.0"}];
 
 // Arch api - https://github.com/JCloudYu/node.prototype.api/
-KernelArchVersion.push({identifier: "node.prototype.api", version: "1.1.0"});
+KernelArchVersion.push({identifier: "node.prototype.api", version: "1.2.0"});
 
 // other application arch type can add additional versions like following line
 // KernelArchVersion.push({identifier: "other_arch_versions", version: "0.9.0"});
