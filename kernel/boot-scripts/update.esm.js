@@ -1,7 +1,7 @@
 import fs from "fs";
 import {Version} from "/kernel/version.esm.js";
 
-import {WorkingRoot, KernelInfo} from "/kernel-info.esm.js";
+import {WorkingRoot, KernelInfo} from "/kernel.esm.js";
 
 
 

@@ -2,7 +2,7 @@
  *	Author: JCloudYu
  *	Create: 2019/05/27
 **/
-import {CheckDataSystemVersion} from "/kernel-info.esm.js";
+import {CheckDataSystemVersion} from "/kernel.esm.js";
 
 (async()=>{
 	if ( !CheckDataSystemVersion() ) return;

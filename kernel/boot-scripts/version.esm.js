@@ -2,7 +2,7 @@
  *	Author: JCloudYu
  *	Create: 2020/01/30
 **/
-import {KernelInfo, ProjectInfo, KernelArchVersion} from "/kernel-info.esm.js";
+import {KernelInfo, ProjectInfo, KernelArchVersion} from "/kernel.esm.js";
 
 const {version:runtime_version} = KernelInfo;
 const {name:project_name, version:project_version} = ProjectInfo;
