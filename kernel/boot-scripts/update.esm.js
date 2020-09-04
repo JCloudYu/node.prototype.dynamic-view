@@ -68,5 +68,7 @@ import {WorkingRoot, KernelInfo} from "/kernel.esm.js";
 		console.log( `Cleaning up application runtime environment...` );
 		await UpdateRuntime.CleanUp();
 	}
+	
+ 	await process.cleanup();
 })()
 .catch((e)=>{setTimeout(()=>{throw e;})});
