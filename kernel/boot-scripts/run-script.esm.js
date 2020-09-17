@@ -16,8 +16,7 @@ const ERR=(e)=>{
 	console.log( "Initializing application..." );
 	// Initialize and boot system here...
 	
-	const argv = process.exec_args.slice(0).reverse();
-	const script = argv.pop();
+	const script = process.exec_args.shift();
 	const script_path = path.resolve(process.cwd(), script);
 	
 	await import('file://' + script_path);
