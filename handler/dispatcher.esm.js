@@ -6,8 +6,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
-import {WorkingRoot} from "/kernel-info.esm.js";
-import {Config} from "/kernel/config.esm.js";
+import {Config, WorkingRoot} from "/kernel.esm.js";
 import {HTTPRequestRejectError} from "/kernel/error.esm.js";
 
 import {MIME_MAP} from "/lib/mime-map.esm.js";

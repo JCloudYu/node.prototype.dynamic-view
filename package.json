@@ -1,12 +1,10 @@
 {
 	"private": true,
-	"name": "node.prototype.api",
+	"name": "node.prototype.dview",
 	"version": "0.0.1",
 	"description": "",
 	"main": "boot.js",
-	"scripts": {
-		"start": "node boot.js"
-	},
+	"scripts": {},
 	"expose_global": {},
 	"kernel_script_map": {},
 	"kernel_ext_type_map": {},
@@ -15,7 +13,6 @@
 	"license": "UNLICENSED",
 	"dependencies": {
 		"beson": "^3.0.2",
-		"extes": "^3.0.1",
-		"jsboost": "^2.10.12"
+		"extes": "^3.0.1"
 	}
 }
