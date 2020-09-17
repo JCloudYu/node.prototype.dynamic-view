@@ -15,12 +15,12 @@ export async function Init() {
 		const {default:CUSTOMIZED_CONFIG} = await import( "/config.esm.js" );
 		Object.merge(_Config, CUSTOMIZED_CONFIG);
 		es_config_loaded = true;
-	} catch(e) {}
+	} catch(e) { if ( e.code !== "ENOENT" && e.code !== "ERR_MODULE_NOT_FOUND" ) throw e; }
 	
 	if ( !es_config_loaded ) {
 		try {
 			const {default:CUSTOMIZED_CONFIG} = await import( "/config.js" );
 			Object.merge(_Config, CUSTOMIZED_CONFIG);
-		} catch(e) {}
+		} catch(e) { if ( e.code !== "ENOENT" && e.code !== "ERR_MODULE_NOT_FOUND" ) throw e; }
 	}
 }

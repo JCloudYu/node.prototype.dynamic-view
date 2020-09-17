@@ -1,4 +1,7 @@
+import fs from "fs";
+import {RuntimeDir} from "/kernel.esm.js";
+
 export async function Update(prev_version) {
-	// This script is purposed to do nothing...
-	console.log("Basic system initialization...");
+	console.log("Creating runtime directory...");
+	fs.mkdirSync(RuntimeDir, {recursive:true, mode:0o755});
 }

@@ -141,6 +141,7 @@ import {
 		
 		
 		console.error( `Exiting...` );
+		await process.cleanup();
 		setTimeout(()=>process.exit(1));
 	});
 })().catch((e)=>setTimeout(()=>{throw e}));

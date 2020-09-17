@@ -25,6 +25,11 @@ import {WorkingRoot, CheckDataSystemVersion, RuntimeDir} from "/kernel.esm.js";
 	
 	let prev = 0;
 	const timer = setInterval.create();
+	process.register_cleanup(()=>{
+		console.log( `Cleaning up regular timer...` );
+		timer.clear()
+	});
+	
 	timer(()=>{
 		const now = new Date();
 		if ( (now.getTime() - prev) < 1000 ) return;
@@ -39,13 +44,10 @@ import {WorkingRoot, CheckDataSystemVersion, RuntimeDir} from "/kernel.esm.js";
 	
 	process
 	.on( 'SIGTERM', async()=>{
-		// INFO: Cleanup runtime here...
-		console.log( `Cleaning up regular timer...` );
-		timer.clear();
+		// Remember to call the previously registered contents before exiting
+		await process.cleanup();
 		
 		console.log( `Exiting...` );
 		setTimeout(()=>process.exit(1));
 	});
-	
-	
 })().catch((e)=>{setTimeout(()=>{throw e;})});

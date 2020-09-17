@@ -9,8 +9,8 @@ import {_CheckDataSystemVersion, _ResolveFileURIPath, _IsWindowsEnv, _WorkingRoo
 
 
 export {
-	_RuntimeData as RuntimeDir,
-	_RuntimeDir as RuntimeData,
+	_RuntimeData as RuntimeData,
+	_RuntimeDir as RuntimeDir,
 	_VolatileData as VolatileData,
 	_Config as Config,
 	_CheckDataSystemVersion as CheckDataSystemVersion,
