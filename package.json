@@ -4,7 +4,9 @@
 	"version": "0.0.1",
 	"description": "",
 	"main": "boot.js",
-	"scripts": {},
+	"scripts": {
+		"start": "node boot.js"
+	},
 	"expose_global": {},
 	"kernel_script_map": {},
 	"kernel_ext_type_map": {},
