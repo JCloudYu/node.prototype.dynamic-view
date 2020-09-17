@@ -73,19 +73,6 @@ const PATHS = [
 const PATH_MAP = Object.create(null);
 const LOADER_SCRIPT_PATH =import.meta.url.substring(IS_WINDOWS?8:7);
 
-
-// Load path maps
-try {
-	const PATH_DESCRIPTOR = LOADER_SCRIPT_PATH.substring(0, LOADER_SCRIPT_PATH.length - 4) + ".paths.default.json";
-	const content = JSON.parse(fs.readFileSync(PATH_DESCRIPTOR).toString('utf8'));
-	if ( Object(content) === content && Object(content.paths) === content.paths ) {
-		for(const key in content.paths) {
-			PATH_MAP[key] = path.resolve(WORKING_DIR, content.paths[key]);
-		}
-	}
-} catch(e) {}
-
-
 try {
 	const PATH_DESCRIPTOR = LOADER_SCRIPT_PATH.substring(0, LOADER_SCRIPT_PATH.length - 4) + ".paths.json";
 	const content = JSON.parse(fs.readFileSync(PATH_DESCRIPTOR).toString('utf8'));
