@@ -36,36 +36,25 @@ export const _RuntimeData = new Proxy({}, {
 });
 export const _VolatileData = Watchable();
 export async function Init() {
-	const stat = (()=>{
-		try {
-			return fs.statSync(_RuntimeDir);
+	try {
+		const stat = fs.statSync(_RuntimeDir);
+		if ( !stat.isDirectory() ) {
+			throw new Error(`Runtime dir \`${_RuntimeDir}\` must be a directory!`);
 		}
-		catch(e) {
-			if ( e.code === 'ENOENT' ) {
-				return null;
+		else {
+			try {
+				fs.accessSync(_RuntimeDir, fs.constants.W_OK|fs.constants.R_OK|fs.constants.X_OK);
 			}
-			
-			throw e;
+			catch(e) {
+				throw new Error(`Current user has no access to the runtime dir \`${_RuntimeDir}\`!`);
+			}
 		}
-	})();
-	if ( !stat ) {
-		fs.mkdirSync(_RuntimeDir, {recursive:true, mode:0o755});
+		
+		return __ReloadRuntimeData();
 	}
-	else
-	if ( !stat.isDirectory() ) {
-		throw new Error(`Runtime dir \`${_RuntimeDir}\` must be a directory!`);
+	catch(e) {
+		if ( e.code !== 'ENOENT' ) throw e;
 	}
-	else {
-		try {
-			fs.accessSync(_RuntimeDir, fs.constants.W_OK|fs.constants.R_OK|fs.constants.X_OK);
-		}
-		catch(e) {
-			throw new Error(`Current user has no access to the runtime dir \`${_RuntimeDir}\`!`);
-		}
-	}
-	
-
-	return __ReloadRuntimeData();
 }
 
 
@@ -86,5 +75,5 @@ function __ReloadRuntimeData() {
 			_runtime_data = decoded;
 		}
 	}
-	catch(e) {}
+	catch(e) { throw e; }
 }
