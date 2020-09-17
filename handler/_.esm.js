@@ -39,7 +39,7 @@ export function HandleSystemError(req, res, error) {
 			let error_stack = error.stack.trim().replace(/\r/g, '\n').split('\n');
 			error_stack = error_stack.map((item, idx)=>(idx===0?'':`${' '.repeat(8)}${item.trim().substring(3)}`)).join('\n');
 			
-			logger.error(
+			console.error(
 				'Unexpected system error has occurred!\n' +
 				`    Error: ${error.message}\n` +
 				`    Detail: ${error_detail}\n` +
@@ -53,7 +53,7 @@ export function HandleSystemError(req, res, error) {
 			let error_stack = error.stack.trim().replace(/\r/g, '\n').split('\n');
 			error_stack = error_stack.map((item, idx)=>(idx===0?'':`${' '.repeat(8)}${item.trim().substring(3)}`)).join('\n');
 		
-			logger.error(
+			console.error(
 				`Unhandled rejection is received!\n` +
 				`    Error: ${error.message}\n` +
 				`    Stack: {${error_stack}\n${' '.repeat(4)}}`
@@ -66,7 +66,7 @@ export function HandleSystemError(req, res, error) {
 		}
 	}
 	else {
-		logger.error( `Unknown error is received!`, error );
+		console.error( `Unknown error is received!`, error );
 		error = new HTTPRequestRejectError(BaseError.UNEXPECTED_SERVER_ERROR, error);
 	}
 	

@@ -2,7 +2,7 @@
  *	Author: JCloudYu
  *	Create: 2020/01/29
 **/
-import {KernelInfo, KernelArchVersion, ProjectInfo} from "/kernel-info.esm.js";
+import {KernelInfo, KernelArchVersion, ProjectInfo} from "/kernel.esm.js";
 
 
 
