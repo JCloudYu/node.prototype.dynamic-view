@@ -24,7 +24,7 @@ import {
 	
 	
 	// Initializing data source environment
-	logger.info( "Trying to initialize application runtime environment..." );
+	console.error( "Trying to initialize application runtime environment..." );
 	let AppRuntime = null;
 	try {
 		AppRuntime = await import("/index.runtime.esm.js");
@@ -36,7 +36,7 @@ import {
 			await AppRuntime.Init();
 		}
 		
-		logger.info( "Application runtime environment initialized!" );
+		console.error( "Application runtime environment initialized!" );
 	}
 	
 	
@@ -45,13 +45,13 @@ import {
 	
 	
 	// NOTE: Initialize api modules
-	logger.info( `Initializing request handler...` );
+	console.error( `Initializing request handler...` );
 	await InitRequestHandler();
 	
 	
 
 	// NOTE: Create server
-	logger.info( `Creating server instance...` );
+	console.error( `Creating server instance...` );
 	const SERVER = http.createServer((req, res)=>{
 		const base_path = req.url||"/";
 		const {path, query, fragment} = ParseURLPathDescriptor(base_path);
@@ -100,7 +100,7 @@ import {
 	.on('error', (e) => {
 		if (e.code === 'EADDRINUSE') {
 			SERVER.close();
-			logger.error( `Cannot bind server onto ${SERVER_INFO.host}:${SERVER_INFO.port}!` );
+			console.error( `Cannot bind server onto ${SERVER_INFO.host}:${SERVER_INFO.port}!` );
 			setTimeout(()=>process.emit('SIGNAL_TERMINATION'));
 			return;
 		}
@@ -114,33 +114,34 @@ import {
 	
 	
 	// NOTE: Start listening
-	logger.info( `Binding server...` );
+	console.error( `Binding server...` );
 	SERVER.listen(SERVER_INFO.port, SERVER_INFO.host, ()=>{
-		logger.info( `Server is now listening at ${SERVER_INFO.host}:${SERVER_INFO.port}...` );
+		console.error( `Server is now listening at ${SERVER_INFO.host}:${SERVER_INFO.port}...` );
 	});
 	
 	
 	process
 	.on( 'SIGTERM', async()=>{
-		logger.info( `Cleaning up request handlers...` );
+		console.error( `Cleaning up request handlers...` );
 		await CleanUpRequestHandler();
 		
 		
 		
 		if ( AppRuntime && AppRuntime.CleanUp ) {
-			logger.info( `Cleaning up application runtime environment...` );
+			console.error( `Cleaning up application runtime environment...` );
 			await AppRuntime.CleanUp();
 		}
 		
 		
 		
 		if ( SERVER.listening ) {
-			logger.info( `Terminating server...` );
+			console.error( `Terminating server...` );
 			SERVER.close();
 		}
 		
 		
-		logger.info( `Exiting...` );
+		console.error( `Exiting...` );
+		await process.cleanup();
 		setTimeout(()=>process.exit(1));
 	});
 })().catch((e)=>setTimeout(()=>{throw e}));
