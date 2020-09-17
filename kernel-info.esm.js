@@ -12,7 +12,7 @@ const KernelArchVersion = [{identifier: "node.prototype.kernel", version: "1.3.4
 KernelArchVersion.push({identifier: "node.prototype.api", version: "1.3.1"});
 
 // Arch dynamic-www - https://github.com/JCloudYu/node.prototype.api/
-KernelArchVersion.push({identifier: "node.prototype.dynamic-view", version: "1.3.0"});
+KernelArchVersion.push({identifier: "node.prototype.dynamic-view", version: "1.3.1"});
 
 // other application arch type can add additional versions like following line
 // KernelArchVersion.push({identifier: "other_arch_versions", version: "0.9.0"});
