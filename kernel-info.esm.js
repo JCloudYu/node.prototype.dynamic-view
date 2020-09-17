@@ -9,7 +9,7 @@ import {Version} from "/kernel/version.esm.js";
 const KernelArchVersion = [{identifier: "node.prototype.kernel", version: "1.3.3"}];
 
 // Arch api - https://github.com/JCloudYu/node.prototype.api/
-KernelArchVersion.push({identifier: "node.prototype.api", version: "1.2.0"});
+KernelArchVersion.push({identifier: "node.prototype.api", version: "1.3.0"});
 
 // Arch dynamic-www - https://github.com/JCloudYu/node.prototype.api/
 KernelArchVersion.push({identifier: "node.prototype.dynamic-view", version: "1.2.0"});
