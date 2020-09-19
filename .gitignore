@@ -13,3 +13,4 @@ Thumbs.db
 /.loader.paths.json
 /.runtime
 /.kernel.bes
+*.log
